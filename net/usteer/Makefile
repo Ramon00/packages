@@ -1,20 +1,16 @@
-# SPDX-License-Identifier: GPL-2.0-only
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=usteer
-PKG_SOURCE_DATE:=2025-10-04
-PKG_SOURCE_VERSION:=1d6524c6e6b58853f053c7816249a8f68ad9b0e8
+PKG_VERSION:=2024-01-01
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL=https://git.openwrt.org/project/usteer.git
-PKG_MIRROR_HASH:=5f0525c441a023c07e6cb1b9e895ee0fdd84cd67043a905c2954caaa934e4eb8
-
-PKG_MAINTAINER:=David Bauer <mail@david-bauer.net>
-PKG_LICENSE:=GPL-2.0-only
+PKG_SOURCE_URL:=https://github.com/openwrt/usteer.git
+PKG_SOURCE_VERSION:=master
+PKG_MIRROR_HASH:=skip
 
 PKG_BUILD_DEPENDS:=libpcap
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -31,12 +27,9 @@ define Package/usteer/conffiles
 endef
 
 define Package/usteer/install
-	$(INSTALL_DIR) $(1)/sbin $(1)/etc/init.d $(1)/etc/config
-
-	$(CP) $(PKG_BUILD_DIR)/openwrt/usteer/files/etc/config/usteer $(1)/etc/config/usteer
-
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/openwrt/usteer/files/etc/init.d/usteer $(1)/etc/init.d/usteer
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/usteerd $(1)/sbin/usteerd
+    $(INSTALL_DIR) $(1)/sbin $(1)/etc/init.d $(1)/etc/config
+    $(CP) ./files/* $(1)/
+    $(CP) $(PKG_BUILD_DIR)/usteerd $(1)/sbin/
 endef
 
 $(eval $(call BuildPackage,usteer))
