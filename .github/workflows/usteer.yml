@@ -1,0 +1,36 @@
+name: Build usteer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential gawk gettext unzip file libssl-dev libncurses5-dev
+
+      - name: Download OpenWrt SDK
+        run: |
+          wget https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+          tar xf openwrt-sdk-*.tar.xz
+          mv openwrt-sdk-* sdk
+
+      - name: Build usteer
+        run: |
+          cd sdk
+          ./scripts/feeds update -a
+          ./scripts/feeds install usteer
+          make package/usteer/{clean,compile} V=s
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: usteer-ipk
+          path: sdk/bin/packages/**/usteer_*.ipk
