@@ -28,7 +28,7 @@ endef
 
 define Package/usteer/install
     $(INSTALL_DIR) $(1)/sbin $(1)/etc/init.d $(1)/etc/config
-    $(CP) ./files/* $(1)/
+    $(CP) ./files/* $(1)/ 2>/dev/null || true
     $(CP) $(PKG_BUILD_DIR)/usteerd $(1)/sbin/
 endef
 
